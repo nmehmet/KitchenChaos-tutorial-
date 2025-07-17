@@ -81,9 +81,9 @@ public class StoveCounter : BaseCounter, IHasProgress
     public override void Interact(Player player)
     {
         if (!HasKitchenObject())
-        {
+        {//There is not a kithen Object
             if (player.HasKitchenObject())
-            {
+            {//Player has an kitchen object
                 if (HasFryingRecipeWithInput(player.GetKitchenObject().GetKitchenObjectsSO()))
                 {
                     player.GetKitchenObject().SetKitchenObjectParent(this);
@@ -105,13 +105,26 @@ public class StoveCounter : BaseCounter, IHasProgress
             }
         }
         else
-        {
+        {//There is a kitchen object
             if (!player.HasKitchenObject())
-            {
+            {//player has not got a kitchen object
                 GetKitchenObject().SetKitchenObjectParent(player);
                 state = State.Idle;
                 OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = 1f });
                 OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { state = state });
+            }
+            else
+            {//player has a kitchen object
+                if(player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
+                {//player has a plate
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectsSO()))
+                    {
+                        GetKitchenObject().DestroySelf();
+                        state = State.Idle;
+                        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = 1f });
+                        OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { state = state });
+                    }
+                }
             }
         }
     }

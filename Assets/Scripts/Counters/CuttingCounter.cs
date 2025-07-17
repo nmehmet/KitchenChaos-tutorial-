@@ -13,9 +13,9 @@ public class CuttingCounter : BaseCounter , IHasProgress
     public override void Interact(Player player)
     {
         if (!HasKitchenObject())
-        {
+        {//There is not any kitchen object
             if (player.HasKitchenObject())
-            {
+            {//player has a kitchen object
                 if(HasRecipeWithInput(player.GetKitchenObject().GetKitchenObjectsSO()))
                 { 
                     player.GetKitchenObject().SetKitchenObjectParent(this); 
@@ -25,12 +25,23 @@ public class CuttingCounter : BaseCounter , IHasProgress
             }
         }
         else
-        {
+        {//there is a kitchen object
             if (!player.HasKitchenObject())
-            {
+            {//player does not carry a kitchenObject
                 GetKitchenObject().SetKitchenObjectParent(player);
                 cuttingProgress = 0;
                 OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = 1f });
+            }
+            else
+            {//player carries a KitchenObejct
+                if(player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
+                {//player has a plate
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectsSO()))
+                    {
+                        GetKitchenObject().DestroySelf();
+                        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = 1f });
+                    }
+                }
             }
         }
     }
