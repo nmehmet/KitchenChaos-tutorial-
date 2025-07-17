@@ -2,14 +2,10 @@ using System;
 using UnityEngine;
 using UnityEngine.Windows;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter , IHasProgress
 {
-    public event EventHandler<OnProgresChangedEventArgs> OnProgressChanged;
+    public event EventHandler<IHasProgress.OnProgresChangedEventArgs> OnProgressChanged;
     public event EventHandler OnCut;
-    public class OnProgresChangedEventArgs : EventArgs
-    {
-        public float progressNormalized;
-    }
 
     [SerializeField] CuttingRecipeSO[] cuttingRecipeSOArray;
 
@@ -24,7 +20,7 @@ public class CuttingCounter : BaseCounter
                 { 
                     player.GetKitchenObject().SetKitchenObjectParent(this); 
                     cuttingProgress = 0;
-                    OnProgressChanged?.Invoke(this, new OnProgresChangedEventArgs{ progressNormalized = 0f });
+                    OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = 0f });
                 }
             }
         }
@@ -34,7 +30,7 @@ public class CuttingCounter : BaseCounter
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
                 cuttingProgress = 0;
-                OnProgressChanged?.Invoke(this, new OnProgresChangedEventArgs { progressNormalized = 1f });
+                OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = 1f });
             }
         }
     }
@@ -45,7 +41,7 @@ public class CuttingCounter : BaseCounter
             {
                 cuttingProgress++;
                 OnCut?.Invoke(this, EventArgs.Empty);
-                OnProgressChanged?.Invoke(this, new OnProgresChangedEventArgs { progressNormalized = (float)cuttingProgress / GetCuttingProgressMax(GetKitchenObject().GetKitchenObjectsSO()) });
+                OnProgressChanged?.Invoke(this, new IHasProgress.OnProgresChangedEventArgs { progressNormalized = (float)cuttingProgress / GetCuttingProgressMax(GetKitchenObject().GetKitchenObjectsSO()) });
                 
             if (cuttingProgress >= GetCuttingProgressMax(GetKitchenObject().GetKitchenObjectsSO()))
                 {
