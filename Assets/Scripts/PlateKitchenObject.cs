@@ -1,9 +1,16 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlateKitchenObject : KitchenObject
 {
+    public event EventHandler<OnIngredientAddedEventArgs> OnIngredientAdded;
+    public class OnIngredientAddedEventArgs : EventArgs
+    {
+        public KitchenObjectsSO kitchenObjectsSO;
+    }
+
     [SerializeField] private List<KitchenObjectsSO> validKitchenObjectsList;
 
     private List<KitchenObjectsSO> kitchenObjectsSOList;
@@ -18,6 +25,12 @@ public class PlateKitchenObject : KitchenObject
         if (kitchenObjectsSOList.Contains(kitchenObjectSO)) return false;
         
         kitchenObjectsSOList.Add(kitchenObjectSO);
+        OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs { kitchenObjectsSO = kitchenObjectSO });
         return true;
+    }
+
+    public List<KitchenObjectsSO> GetKitchenObjectsSOList()
+    {
+        return kitchenObjectsSOList;
     }
 }
