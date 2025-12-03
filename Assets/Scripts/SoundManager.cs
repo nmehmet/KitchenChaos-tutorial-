@@ -1,11 +1,13 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class SoundManager : MonoBehaviour
 {
     [SerializeField] private AudioClipRefsSO audioClipRefsSO;
     [SerializeField, Range(0f, 1f)] float volume;
 
+    private const string PLAYER_PREFS_SOUND_EFFECTS_VOLUME = "SoundEffectsVolume";
     public static SoundManager Instance { get; private set; }
     private void Start()
     {
@@ -21,6 +23,8 @@ public class SoundManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, 1f);
     }
     private void PlateKitchenObject_OnAnyIngredientAdded(object sender, System.EventArgs e)
     {
@@ -75,5 +79,22 @@ public class SoundManager : MonoBehaviour
     public void PlayFootstepsSound(Vector3 position)
     {
         PlaySound(audioClipRefsSO.footstep, position);
+    }
+
+    public void ChangeVolume()
+    {
+        volume += .1f;
+        if (volume > 1f)
+        {
+            volume = 0f;
+        }
+
+        PlayerPrefs.SetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, volume);
+        PlayerPrefs.Save();
+    }
+
+    public float GetVolume()
+    {
+        return volume * 10f;
     }
 }

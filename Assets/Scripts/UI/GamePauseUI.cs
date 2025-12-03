@@ -4,13 +4,17 @@ using UnityEngine.UI;
 
 public class GamePauseUI : MonoBehaviour
 {
+    
+
     [SerializeField] private Button MainMenuButton;
     [SerializeField] private Button ResumeButton;
+    [SerializeField] private Button OptionsButton;
 
     private void Awake()
     {
         ResumeButton.onClick.AddListener(() => ResumeGame());
         MainMenuButton.onClick.AddListener(() => GotoMainMenu());
+        OptionsButton.onClick.AddListener(() => GoToOptions());
     }
     private void Start()
     {
@@ -20,12 +24,12 @@ public class GamePauseUI : MonoBehaviour
         Hide();
     }
 
-    private void KitchenGameManager_OnGameUnpaused(object sender, System.EventArgs e)
+    public void KitchenGameManager_OnGameUnpaused(object sender, System.EventArgs e)
     {
         Hide();
     }
 
-    private void KitchenGameManager_OnGamePaused(object sender, System.EventArgs e)
+    public void KitchenGameManager_OnGamePaused(object sender, System.EventArgs e)
     {
         Show();
     }
@@ -45,5 +49,10 @@ public class GamePauseUI : MonoBehaviour
     private void ResumeGame()
     {
         KitchenGameManager.Instance.TogglePauseGame();
+    }
+    private void GoToOptions()
+    {
+        OptionsUI.Instance.Show();
+        //Hide();
     }
 }
